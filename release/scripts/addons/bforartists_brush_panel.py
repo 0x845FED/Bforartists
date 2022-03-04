@@ -33,7 +33,7 @@ import bpy
 import bpy.utils.previews
 
 
-# This is where you define the default icon per the brush mix mode type, everything is currently set to the "DELETE" icon
+# This is where you define the default icon per the brush mix mode type, "DELETE" icon indicates icons to be done
 DEFAULT_ICON_FOR_BLEND_MODE = {
     "MIX": "PAINT_MIX",
     "DARKEN": "PAINT_DARKEN",
