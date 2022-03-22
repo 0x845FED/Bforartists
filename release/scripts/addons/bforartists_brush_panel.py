@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Bforartists Brush Panel",
     "author": "Iyad Ahmed (@cgonfire), Draise (@trinumedia)",
-    "version": (0, 0, 6),
+    "version": (0, 0, 8),
     "blender": (3, 1, 0),
     "location": "3D View > Tools",
     "description": "This is an official Bforartists addon to add top-level brush presets to panels in the toolshelf. Weight Paint mode only (for now)",
@@ -35,28 +35,31 @@ import bpy.utils.previews
 
 # This is where you define the default icon per the brush mix mode type, "DELETE" icon indicates icons to be done
 DEFAULT_ICON_FOR_BLEND_MODE = {
-    "MIX": "PAINT_MIX",
+    # "MIX": "PAINT_MIX", # This currently overrides all other brush defaults since the other brushes default to "Mix".
     "DARKEN": "PAINT_DARKEN",
     "MUL": "PAINT_MULTIPLY",
-    "COLORBURN": "DELETE",
-    "LINEARBURN": "DELETE",
+    "COLORBURN": "OUTLINER_OB_LIGHT",
+    "LINEARBURN": "MESH_LINE",
     "LIGHTEN": "PAINT_LIGHTEN",
-    "SCREEN": "DELETE",
-    "COLORDODGE": "DELETE",
+    "SCREEN": "SPLITSCREEN",
+    "COLORDODGE": "PAINT_MIX",
     "ADD": "PAINT_ADD",
-    "OVERLAY": "DELETE",
-    "SOFTLIGHT": "DELETE",
-    "HARDLIGHT": "VIVIDLIGHT",
-    "LINEARLIGHT": "DELETE",
-    "PINLIGHT": "DELETE",
-    "DIFFERENCE": "DELETE",
-    "EXCLUSION": "DELETE",
+    "OVERLAY": "OVERLAY",
+    "SOFTLIGHT": "NODE_LIGHTFALLOFF",
+    "VIVIDLIGHT": "LIGHT_SIZE",
+    "HARDLIGHT": "LIGHT_POINT",
+    "LINEARLIGHT": "LIGHT_STRENGTH",
+    "PINLIGHT": "NODE_LIGHTPATH",
+    "DIFFERENCE": "MOD_BOOLEAN",
+    "EXCLUSION": "BOOLEAN_MATH",
     "SUB": "PAINT_SUBTRACT",
-    "HUE": "DELETE",
-    "COLOR": "DELETE",
-    "LUMINOSITY": "DELETE",
-    "ERASE_ALPHA": "DELETE",
-    "ADD_ALPHA": "DELETE",
+    "HUE": "NODE_HUESATURATION",
+    "COLOR": "COLOR",
+    "LUMINOSITY": "NODE_LUMINANCE",
+    "ERASE_ALPHA": "IMAGE_RGB_ALPHA",
+    "ADD_ALPHA": "SEQ_ALPHA_OVER",
+    "BLUR": "PAINT_BLUR",
+    "SATURATION": "COLOR_SPACE",
 }
 
 _icon_cache = dict()
@@ -165,10 +168,16 @@ class BFA_OT_set_brush(bpy.types.Operator):
         paint_settings.brush = bpy.data.brushes[self.brush_name]
         return {"FINISHED"}
 
+    @classmethod
+    def description(cls, context, properties):
+        return properties.brush_name
+
 
 ## From BFA space_toolbar_tabs
 def column_count(region: bpy.types.Region):
-
+    """
+    Choose an appropriate layout for the toolbar.
+    """
     # Currently this just checks the width,
     # we could have different layouts as preferences too.
     system = bpy.context.preferences.system
@@ -202,6 +211,12 @@ class BFA_PT_brush_weight(bpy.types.Panel):
     def poll(cls, context):
         return context.mode == "PAINT_WEIGHT"
 
+    # Trying to add icon to header
+    def draw_header(self, _):
+        layout = self.layout
+        layout.label(text="", icon="PAINT_DRAW")
+
+    ###
     def draw(self, context: bpy.types.Context):
         layout = self.layout
         layout.scale_y = 2
@@ -216,17 +231,9 @@ class BFA_PT_brush_weight(bpy.types.Panel):
             for but in buttons["DRAW"]:
                 but.draw(context, col)
 
-            col = layout.column(align=True)
-            for but in buttons["BLUR"]:
-                but.draw(context, col)
-
         else:
             col = layout.column_flow(columns=num_cols, align=True)
             for but in buttons["DRAW"]:
-                but.draw(context, col, icon_only=True)
-
-            col = layout.column_flow(columns=num_cols, align=True)
-            for but in buttons["BLUR"]:
                 but.draw(context, col, icon_only=True)
 
 
@@ -241,6 +248,11 @@ class BFA_PT_brush_weight_smear(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         return context.mode == "PAINT_WEIGHT"
+
+    # Trying to add icon to header
+    def draw_header(self, _):
+        layout = self.layout
+        layout.label(text="", icon="PAINT_SMEAR")
 
     def draw(self, context: bpy.types.Context):
         layout = self.layout
@@ -272,6 +284,11 @@ class BFA_PT_brush_weight_average(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         return context.mode == "PAINT_WEIGHT"
+
+    # Trying to add icon to header
+    def draw_header(self, _):
+        layout = self.layout
+        layout.label(text="", icon="PAINT_AVERAGE")
 
     def draw(self, context: bpy.types.Context):
         layout = self.layout
@@ -305,6 +322,11 @@ class BFA_PT_brush_weight_blur(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         return context.mode == "PAINT_WEIGHT"
+
+    # Trying to add icon to header
+    def draw_header(self, _):
+        layout = self.layout
+        layout.label(text="", icon="PAINT_BLUR")
 
     def draw(self, context: bpy.types.Context):
         layout = self.layout
