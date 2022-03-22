@@ -19,8 +19,6 @@ bl_info = {
     "description": "UV Toolset. See Add-ons Preferences for details",
     "warning": "",
     "support": "COMMUNITY",
-    "wiki_url": "https://docs.blender.org/manual/en/dev/addons/"
-                "uv/magic_uv.html",
     "doc_url": "{BLENDER_MANUAL_URL}/addons/uv/magic_uv.html",
     "tracker_url": "https://github.com/nutti/Magic-UV",
     "category": "UV",
@@ -34,7 +32,7 @@ if "bpy" in locals():
     utils.bl_class_registry.BlClassRegistry.cleanup()
     importlib.reload(op)
     importlib.reload(ui)
-    importlib.reload(properites)
+    importlib.reload(properties)
     importlib.reload(preferences)
 else:
     import bpy
@@ -42,7 +40,7 @@ else:
     from . import utils
     from . import op
     from . import ui
-    from . import properites
+    from . import properties
     from . import preferences
 
 import bpy
@@ -50,7 +48,7 @@ import bpy
 
 def register():
     utils.bl_class_registry.BlClassRegistry.register()
-    properites.init_props(bpy.types.Scene)
+    properties.init_props(bpy.types.Scene)
     user_prefs = utils.compatibility.get_user_preferences(bpy.context)
     if user_prefs.addons['magic_uv'].preferences.enable_builtin_menu:
         preferences.add_builtin_menu()
@@ -58,7 +56,7 @@ def register():
 
 def unregister():
     preferences.remove_builtin_menu()
-    properites.clear_props(bpy.types.Scene)
+    properties.clear_props(bpy.types.Scene)
     utils.bl_class_registry.BlClassRegistry.unregister()
 
 

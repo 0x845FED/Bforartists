@@ -2997,7 +2997,7 @@ class WM_MT_splash_quick_setup(Menu):
 
         old_version = bpy.types.PREFERENCES_OT_copy_prev.previous_version()
         if bpy.types.PREFERENCES_OT_copy_prev.poll(context) and old_version:
-            sub.operator("preferences.copy_prev", text="Load %d.%d Settings" % old_version)
+            sub.operator("preferences.copy_prev", text=iface_("Load %d.%d Settings", "Operator") % old_version)
             sub.operator("wm.save_userpref", text="Save New Settings")
         else:
             sub.label()
@@ -3057,7 +3057,7 @@ class WM_MT_splash(Menu):
 
         layout.separator()
 
-        layout.label(text = "Bforartists 3.0.1 is based on Blender 3.2.0 Alpha")
+        layout.label(text = "Bforartists 3.1.0 is based on Blender 3.2.0 Alpha")
 
         layout.separator()
 

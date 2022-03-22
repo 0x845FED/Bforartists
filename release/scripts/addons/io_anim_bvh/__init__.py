@@ -5,7 +5,7 @@
 bl_info = {
     "name": "BioVision Motion Capture (BVH) format",
     "author": "Campbell Barton",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (2, 81, 6),
     "location": "File > Import-Export",
     "description": "Import-Export BVH from armature objects",
@@ -351,11 +351,11 @@ class BVH_PT_export_animation(bpy.types.Panel):
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportBVH.bl_idname, text="Motion Capture (.bvh)")
+    self.layout.operator(ImportBVH.bl_idname, text="Motion Capture (.bvh)", icon = "LOAD_BVH")
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportBVH.bl_idname, text="Motion Capture (.bvh)")
+    self.layout.operator(ExportBVH.bl_idname, text="Motion Capture (.bvh)", icon = "SAVE_BVH")
 
 
 classes = (

@@ -11,6 +11,7 @@ from bl_ui.utils import PresetPanel
 from bpy.types import Panel
 
 from bl_ui.properties_grease_pencil_common import GreasePencilSimplifyPanel
+from bl_ui.properties_render import draw_hair_settings
 from bl_ui.properties_view_layer import ViewLayerCryptomattePanel, ViewLayerAOVPanel
 
 
@@ -324,7 +325,6 @@ class CYCLES_RENDER_PT_sampling_advanced(CyclesButtonsPanel, Panel):
         row = sub.row()
         row.use_property_split = True
         row.separator()
-        row.active = not cscene.use_preview_adaptive_sampling
         row.prop(cscene, "scrambling_distance", text="Multiplier")
 
         col = layout.column(align=True)
@@ -385,6 +385,13 @@ class CYCLES_RENDER_PT_hair(CyclesButtonsPanel, Panel):
         if ccscene.shape == 'RIBBONS':
             col.prop(ccscene, "subdivisions", text="Curve Subdivisions")
 
+class CYCLES_RENDER_PT_hair_viewport_display(CyclesButtonsPanel, Panel):
+    bl_label = "Viewport Display"
+    bl_parent_id = "CYCLES_RENDER_PT_hair"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        draw_hair_settings(self, context)
 
 class CYCLES_RENDER_PT_volumes(CyclesButtonsPanel, Panel):
     bl_label = "Volumes"
@@ -1194,7 +1201,7 @@ class CYCLES_OBJECT_PT_motion_blur(CyclesButtonsPanel, Panel):
     def poll(cls, context):
         ob = context.object
         if CyclesButtonsPanel.poll(context) and ob:
-            if ob.type in {'MESH', 'CURVE', 'CURVE', 'SURFACE', 'FONT', 'META', 'CAMERA', 'HAIR', 'POINTCLOUD'}:
+            if ob.type in {'MESH', 'CURVE', 'CURVE', 'SURFACE', 'FONT', 'META', 'CAMERA', 'CURVES', 'POINTCLOUD'}:
                 return True
             if ob.instance_type == 'COLLECTION' and ob.instance_collection:
                 return True
@@ -1236,7 +1243,7 @@ class CYCLES_OBJECT_PT_motion_blur(CyclesButtonsPanel, Panel):
 
 
 def has_geometry_visibility(ob):
-    return ob and ((ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'META', 'LIGHT', 'VOLUME', 'POINTCLOUD', 'HAIR'}) or
+    return ob and ((ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'META', 'LIGHT', 'VOLUME', 'POINTCLOUD', 'CURVES'}) or
                    (ob.instance_type == 'COLLECTION' and ob.instance_collection))
 
 
@@ -2390,6 +2397,7 @@ classes = (
     CYCLES_RENDER_PT_volumes,
     CYCLES_RENDER_PT_subdivision,
     CYCLES_RENDER_PT_hair,
+    CYCLES_RENDER_PT_hair_viewport_display,
     CYCLES_RENDER_PT_simplify,
     CYCLES_RENDER_PT_simplify_viewport,
     CYCLES_RENDER_PT_simplify_render,

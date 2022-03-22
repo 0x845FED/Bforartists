@@ -145,7 +145,7 @@ class NODE_HT_header(Header):
                 NODE_MT_editor_menus.draw_collapsible(context, layout)
 
                 types_that_support_material = {'MESH', 'CURVE', 'SURFACE', 'FONT', 'META',
-                                               'GPENCIL', 'VOLUME', 'HAIR', 'POINTCLOUD'}
+                                               'GPENCIL', 'VOLUME', 'CURVES', 'POINTCLOUD'}
                 # disable material slot buttons when pinned, cannot find correct slot within id_from (T36589)
                 # disable also when the selected object does not support materials
                 has_material_slots = not snode.pin and ob_type in types_that_support_material
@@ -306,7 +306,7 @@ class NODE_HT_header(Header):
 
         # Snap
         row = layout.row(align=True)
-        row.prop(tool_settings, "use_snap", text="")
+        row.prop(tool_settings, "use_snap_node", text="")
         if tool_settings.use_snap:
             row.prop(tool_settings, "snap_node_element", icon_only=True)
             if tool_settings.snap_node_element != 'GRID':

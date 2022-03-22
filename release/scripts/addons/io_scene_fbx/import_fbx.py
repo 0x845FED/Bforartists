@@ -591,7 +591,7 @@ def blen_read_animations_action_item(action, item, cnodes, fps, anim_offset, glo
             bl_obj = item.bl_obj
 
         # We want to create actions for objects, but for bones we 'reuse' armatures' actions!
-        grpname = item.bl_obj.name
+        grpname = bl_obj.name
 
         # Since we might get other channels animated in the end, due to all FBX transform magic,
         # we need to add curves for whole loc/rot/scale in any case.
@@ -1113,7 +1113,7 @@ def blen_read_geom_layer_smooth(fbx_obj, mesh):
         return False
 
     if fbx_layer_mapping == b'ByEdge':
-        # some models have bad edge data, we cant use this info...
+        # some models have bad edge data, we can't use this info...
         if not mesh.edges:
             print("warning skipping sharp edges data, no valid edges...")
             return False
@@ -1162,13 +1162,13 @@ def blen_read_geom_layer_edge_crease(fbx_obj, mesh):
     layer_id = b'EdgeCrease'
     fbx_layer_data = elem_prop_first(elem_find_first(fbx_layer, layer_id))
 
-    # some models have bad edge data, we cant use this info...
+    # some models have bad edge data, we can't use this info...
     if not mesh.edges:
         print("warning skipping edge crease data, no valid edges...")
         return False
 
     if fbx_layer_mapping == b'ByEdge':
-        # some models have bad edge data, we cant use this info...
+        # some models have bad edge data, we can't use this info...
         if not mesh.edges:
             print("warning skipping edge crease data, no valid edges...")
             return False
@@ -1179,7 +1179,7 @@ def blen_read_geom_layer_edge_crease(fbx_obj, mesh):
             fbx_layer_data, None,
             fbx_layer_mapping, fbx_layer_ref,
             1, 1, layer_id,
-            # Blender squares those values before sending them to OpenSubdiv, when other softwares don't,
+            # Blender squares those values before sending them to OpenSubdiv, when other software don't,
             # so we need to compensate that to get similar results through FBX...
             xform=sqrt,
             )
@@ -1431,9 +1431,9 @@ def blen_read_material(fbx_tmpl, fbx_obj, settings):
     # No specular color in Principled BSDF shader, assumed to be either white or take some tint from diffuse one...
     # TODO: add way to handle tint option (guesstimate from spec color + intensity...)?
     ma_wrap.specular = elem_props_get_number(fbx_props, b'SpecularFactor', 0.25) * 2.0
-    # XXX Totally empirical conversion, trying to adapt it
-    #     (from 1.0 - 0.0 Principled BSDF range to 0.0 - 100.0 FBX shininess range)...
-    fbx_shininess = elem_props_get_number(fbx_props, b'Shininess', 20.0)
+    # XXX Totally empirical conversion, trying to adapt it (and protect against invalid negative values, see T96076):
+    #     From [1.0 - 0.0] Principled BSDF range to [0.0 - 100.0] FBX shininess range)...
+    fbx_shininess = max(elem_props_get_number(fbx_props, b'Shininess', 20.0), 0.0)
     ma_wrap.roughness = 1.0 - (sqrt(fbx_shininess) / 10.0)
     # Sweetness... Looks like we are not the only ones to not know exactly how FBX is supposed to work (see T59850).
     # According to one of its developers, Unity uses that formula to extract alpha value:
@@ -2666,7 +2666,7 @@ def load(operator, context, filepath="",
     def connection_filter_ex(fbx_uuid, fbx_id, dct):
         return [(c_found[0], c_found[1], c_type)
                 for (c_uuid, c_type) in dct.get(fbx_uuid, ())
-                # 0 is used for the root node, which isnt in fbx_table_nodes
+                # 0 is used for the root node, which isn't in fbx_table_nodes
                 for c_found in (() if c_uuid == 0 else (fbx_table_nodes.get(c_uuid, (None, None)),))
                 if (fbx_id is None) or (c_found[0] and c_found[0].id == fbx_id)]
 
